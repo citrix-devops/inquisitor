@@ -1,0 +1,37 @@
+#!/bin/bash
+source setenv
+PARAM=
+#assembly:single
+#--jvmargs "-Xmx1024m"
+set -ex
+set| grep PATH
+
+# this is updating to latest releses from atlassian
+atlas-mvn versions:update-properties versions:display-plugin-updates versions:use-latest-releases -DprocessDependencyManagement=true versions:display-dependency-updates
+
+atlas-compile $PARAM
+if [ $? -gt 0 ]; then
+    echo "ERROR!"
+    exit 2
+fi
+
+atlas-package $PARAM
+
+if [ $? -gt 0 ]; then
+    echo "ERROR!"
+    exit 2
+fi
+
+#atlas-integration-test $PARAM
+
+if [ $? -gt 0 ]; then
+    echo "ERROR!"
+    exit 2
+fi
+
+#mkdir -p .target
+#rm .target/*.jar
+#cp -a */target/*.jar .target/
+
+#atlas-release $PARAM
+

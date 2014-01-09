@@ -1,0 +1,12 @@
+#!/bin/bash
+
+dirname=`perl -e 'use Cwd "abs_path";print abs_path(shift)' ../../sdk/bin`
+
+export PATH=$dirname:$PATH
+export JIRAHOME=/var/local/jira
+export JIRAINSTALL=/opt/jira
+
+export ATLAS_OPTS="-Dcom.sun.net.ssl.checkRevocation=false -Dmail.mime.decodeparameters=true"
+export MAVEN_OPTS="-Xms2048m -Xmx512m -XX:MaxPermSize=512m -Dcom.sun.net.ssl.checkRevocation=false"
+# -Djava.security.debug=certpath"
+
