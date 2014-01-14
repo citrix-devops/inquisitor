@@ -7,15 +7,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.citrix.jira</groupId>
     <artifactId>inquisitor</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
     <organization>
         <name>Citrix</name>
         <url>http://citrix.com/</url>
     </organization>
 
-    <name>JIRA Inquisitor</name>
-    <description>JIRA Inquisitor is extending JIRA REST API with JSON queries that are blazing fast.</description>
+    <name>Inquisitor plugin for JIRA®</name>
+    <description>Inquisitor plugin for JIRA® is extending JIRA® REST API with JSON queries that are blazing fast and that do return compact results. The plugin is at least one order of magnitude faster than JIRA search, allowing you to export ~30.000 issues in less than 10 seconds.</description>
     <packaging>atlassian-plugin</packaging>
 
     <dependencies>
@@ -98,6 +98,13 @@
 			<scope>test</scope>
 		</dependency>
 		-->
+
+        <dependency>
+            <groupId>com.atlassian.usercompatibility</groupId>
+            <artifactId>usercompatibility-jira</artifactId>
+            <version>0.18</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -135,7 +142,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jira.version>6.2-rotp1</jira.version>
-        <amps.version>4.2.11-AMPS-1052-m1</amps.version>
+        <amps.version>4.2.11</amps.version>
         <plugin.testrunner.version>1.1.2</plugin.testrunner.version>
 		<!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
 		<testkit.version>5.2.26</testkit.version>

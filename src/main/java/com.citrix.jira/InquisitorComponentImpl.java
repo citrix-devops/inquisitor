@@ -2,77 +2,93 @@ package com.citrix.jira;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.usercompatibility.UserWithKey;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
 import com.atlassian.annotations.PublicApi;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.jql.builder.JqlClauseBuilder;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
-import com.atlassian.jira.project.ProjectManager;
-import com.atlassian.jira.project.version.Version;
-import com.atlassian.jira.project.version.VersionManager;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.jira.security.JiraAuthenticationContext;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.DelegatingApplicationUser;
 import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.bc.project.component.ProjectComponent;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.ConstantsManager;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.*;
-import com.atlassian.jira.issue.comparator.IssueKeyComparator;
-import com.atlassian.jira.issue.context.IssueContext;
-import com.atlassian.jira.issue.context.IssueContextImpl;
-import com.atlassian.jira.issue.customfields.manager.OptionsManager;
 import com.atlassian.jira.issue.search.SearchResults;
-import com.atlassian.jira.issue.status.Status;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.usercompatibility.UserCompatibilityHelper;
+import static com.atlassian.jira.user.ApplicationUsers.toDirectoryUser;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.JSONArray;
+import org.codehaus.jackson.map.SerializationConfig.Feature;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
+import javax.ws.rs.Path;
+import javax.ws.rs.ext.Provider;
+/*
+// Customized {@code ContextResolver} implementation to pass ObjectMapper to use
+@Provider
+@Produces(MediaType.APPLICATION_JSON)
+public class JacksonContextResolver implements ContextResolver<ObjectMapper> {
+    private ObjectMapper objectMapper;
+
+    public JacksonContextResolver() throws Exception {
+        this.objectMapper = new ObjectMapper().configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+    public ObjectMapper getContext(Class<?> objectType) {
+        return objectMapper;
+    }
+}
+*/
 
 @Path("/")
-@AnonymousAllowed
+//@AnonymousAllowed
 @Consumes({MediaType.APPLICATION_JSON}) // MediaType.APPLICATION_XML
 @Produces({MediaType.APPLICATION_JSON})
 @PublicApi
 public class InquisitorComponentImpl implements InquisitorComponent
 {
     private final ApplicationProperties applicationProperties;
+    private static final Logger log = Logger.getLogger(InquisitorComponent.class);
+    private static IssueManager issueMgr = ComponentAccessor.getIssueManager();
+    private static IssueLinkManager linkMgr = ComponentAccessor.getIssueLinkManager();
 
     @SuppressWarnings("unchecked")
-    private JSONObject handleTCTreeInner(Issue parent, boolean doChildren, IssueManager issueMgr, IssueLinkManager linkMgr) throws Exception {
-        List<Issue> issues = new ArrayList<Issue>();
+    private JSONObject handleIssueTreeInner(Issue parent, int depth) throws Exception {
+
         JSONObject ret = new JSONObject();
+        if(parent == null) {
+            ret.put("error", true);
+            return ret;
+         }
         ret.put("key", parent.getKey());
         ret.put("title", parent.getSummary());
         ret.put("type", parent.getIssueTypeObject().getName());
         Collection<IssueLink> outlinks = linkMgr.getOutwardLinks(parent.getId());
+        JSONArray children = new JSONArray();
+
         for (IssueLink il : outlinks) {
             if (il.getIssueLinkType().getOutward().equals("contains"))
-                issues.add(il.getDestinationObject());
-        }
-        if (issues.size() > 0) {
-            if (doChildren) {
-                JSONArray children = new JSONArray();
-                for (Issue i: issues) {
-                    children.add(handleTCTreeInner(i, true, issueMgr, linkMgr));
-                }
-                ret.put("children", children);
+            {
+                if (depth != 0)
+                    children.add(handleIssueTreeInner(il.getDestinationObject(), depth-1));
+                else
+                    children.add(il.getDestinationObject().getKey());
             }
-            ret.put("hasChildren", true);
         }
-        else {
-            ret.put("hasChildren", false);
+        if (!children.isEmpty()) {
+            ret.put("children", children);
         }
+        //else {
+        //    ret.put("hasChildren", false);
+        //}
         return ret;
     }
 
@@ -82,7 +98,7 @@ public class InquisitorComponentImpl implements InquisitorComponent
         this.applicationProperties = applicationProperties;
     }
     @GET
-    @AnonymousAllowed
+    //@AnonymousAllowed
     @Path("echo")
     @PublicApi
     public Response echo() {
@@ -90,39 +106,32 @@ public class InquisitorComponentImpl implements InquisitorComponent
     }
 
     @GET
-    @AnonymousAllowed
-    @Path("tctree")
+    //@AnonymousAllowed
+    @Path("issuetree/{rootProjectOrKey}")
     @PublicApi
     @SuppressWarnings("unchecked")
-    public Response tctree(@QueryParam("key") String key, @QueryParam("children") String children, @QueryParam("toptickets") String topTickets) {
+    public Response issuetree(@PathParam("rootProjectOrKey") String key, @DefaultValue("0") @QueryParam("depth") Integer depth) {
+
         try {
             JSONArray list = new JSONArray();
-            boolean doChildren = (children != null);
-            IssueManager issueMgr;
-            issueMgr = ComponentAccessor.getIssueManager();
-            IssueLinkManager linkMgr;
-            linkMgr = ComponentAccessor.getIssueLinkManager();
-            if (key == null) {
-                String[] topString = topTickets.split(",");
-                List<Issue> tops = new ArrayList<Issue>();
-                for (String topTC : topString)
-                    tops.add(issueMgr.getIssueObject(topTC));
 
-                for (Issue i : tops) {
-                    list.add(handleTCTreeInner(i, doChildren, issueMgr, linkMgr));
-                }
+            if (key == null || key.isEmpty()) {
+                return Response.status(400).entity("{ \"error\": \"Parameters should be specified.\" }").build();
             }
-            else {
-                Issue i = issueMgr.getIssueObject(key);
-                Collection<IssueLink> outlinks = linkMgr.getOutwardLinks(i.getId());
-                for (IssueLink il : outlinks) {
-                    if (il.getIssueLinkType().getOutward().equals("contains"))
-                        list.add(handleTCTreeInner(il.getDestinationObject(), doChildren, issueMgr, linkMgr));
+            String[] keys = key.split(",");
+            for (String k : keys)
+                if (k.contains("-")) {
+                    Issue i = issueMgr.getIssueObject(k);
+                    if(i != null)
+                        list.add(handleIssueTreeInner(i, depth));
                 }
+            if (list.isEmpty()) {
+                return Response.ok(Response.status(Response.Status.NOT_FOUND)).build();
             }
             return Response.ok(list).build();
         }
         catch (Exception e){
+            log.error("Exception: ", e);
             return Response.serverError().entity(e).build();
         }
     }
@@ -130,20 +139,30 @@ public class InquisitorComponentImpl implements InquisitorComponent
 
     @GET
     @AnonymousAllowed
-    @Path("project/{key}")
+    @Path("issues/{projectIdOrKey}")
     @PublicApi
     @SuppressWarnings("unchecked")
-    public Response issues(@PathParam("key") String key, @QueryParam("issuetype") String issuetype, @QueryParam("jql") String jql) {
+    public Response issues(@PathParam("projectIdOrKey") String key, @QueryParam("issueType") String issuetype, @QueryParam("jql") String jql) {
         try {
             JSONArray list = new JSONArray();
 
             JiraAuthenticationContext authContext = ComponentAccessor.getJiraAuthenticationContext();
-            User user;
+
+
+            User user = authContext.getLoggedInUser();
+
+            //final UserWithKey loggedInUser = UserCompatibilityHelper.convertUserObject(authContext.getUser());
+
+            //ApplicationUser au = (ApplicationUser) UserCompatibilityHelper.convertUserObject(remoteUser);
+            //ßreturn doGetActions(issue, toDirectoryUser(au), 20);
+
+
+
             if(!authContext.isLoggedInUser()) {
-                // user = ComponentAccessor.getUserManager().getUser("sorins");
                 throw new Exception("Cannot run this as anonymous.");
             } else {
-                user = authContext.getUser().getDirectoryUser();
+                //user = authContext.getUser().getDirectoryUser();
+                //user = loggedInUser.getUser(); // au.getDirectoryUser();
             }
 
             if (jql == null) {

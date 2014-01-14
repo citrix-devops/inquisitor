@@ -22,8 +22,8 @@
     </web-resource>
     
     <!-- publish our component -->
-    <component key="myPluginComponent" class="com.xensource.MyPluginComponentImpl" public="true">
-        <interface>com.xensource.MyPluginComponent</interface>
+    <component key="InquisitorComponent" class="com.citrix.jira.InquisitorComponentImpl" public="true">
+        <interface>com.citrix.jira.InquisitorComponent</interface>
     </component>
     
     <!-- import from the product container -->
@@ -31,7 +31,7 @@
 
 
     <rest key="inquisitorRest" path="/inquisitor" version="1.0">
-        <description>Provides extended query support to JIRA REST services.</description>
+        <description>Provides extended query support to JIRA® REST services.</description>
     </rest>
     
 </atlassian-plugin>
