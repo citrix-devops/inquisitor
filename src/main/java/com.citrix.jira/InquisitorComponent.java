@@ -9,7 +9,10 @@ import com.atlassian.annotations.PublicApi;
 public interface InquisitorComponent
 {
     Response echo();
-    Response issues(@PathParam("projectIdOrKey") String key, @QueryParam("issueType") String issueType, @QueryParam("jql") String jql);
     Response issuetree(@PathParam("rootProjectOrKey") String key, @DefaultValue("") @QueryParam("depth") Integer depth);
-
+    Response issues(@PathParam("projectIdOrKey") String key,
+                           @QueryParam("issueType") String issuetype,
+                           @QueryParam("jql") String jql,
+                           @DefaultValue("0") @QueryParam("startAt") int startAt,
+                           @DefaultValue("25000") @QueryParam("maxResults") int maxResults);
 }

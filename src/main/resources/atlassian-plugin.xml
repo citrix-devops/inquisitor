@@ -31,7 +31,7 @@
 
 
     <rest key="inquisitorRest" path="/inquisitor" version="1.0">
-        <description>Provides extended query support to JIRA® REST services.</description>
+        <description>Provides extended query support to JIRA REST services.</description>
     </rest>
     
 </atlassian-plugin>

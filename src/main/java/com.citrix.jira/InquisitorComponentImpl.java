@@ -142,7 +142,11 @@ public class InquisitorComponentImpl implements InquisitorComponent
     @Path("issues/{projectIdOrKey}")
     @PublicApi
     @SuppressWarnings("unchecked")
-    public Response issues(@PathParam("projectIdOrKey") String key, @QueryParam("issueType") String issuetype, @QueryParam("jql") String jql) {
+    public Response issues(@PathParam("projectIdOrKey") String key,
+                           @QueryParam("issueType") String issuetype,
+                           @QueryParam("jql") String jql,
+                           @DefaultValue("0") @QueryParam("startAt") int startAt,
+                           @DefaultValue("25000") @QueryParam("maxResults") int maxResults) {
         try {
             JSONArray list = new JSONArray();
 
@@ -176,7 +180,7 @@ public class InquisitorComponentImpl implements InquisitorComponent
                     .parseQuery(user, jql);
 
             SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(user,
-                    parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
+                    parseResult.getQuery(), PagerFilter.newPageAlignedFilter(startAt, maxResults));
 
             List<Issue> issues = results.getIssues();
 
