@@ -1,37 +1,27 @@
 package com.citrix.jira;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.usercompatibility.UserWithKey;
-import com.atlassian.jira.web.bean.PagerFilter;
-import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
 import com.atlassian.annotations.PublicApi;
-import com.atlassian.sal.api.ApplicationProperties;
-import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.crowd.embedded.api.User;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.component.ProjectComponent;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.*;
-import com.atlassian.jira.issue.search.SearchResults;
-import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
-import com.atlassian.jira.usercompatibility.UserCompatibilityHelper;
-import static com.atlassian.jira.user.ApplicationUsers.toDirectoryUser;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
+import com.atlassian.sal.api.ApplicationProperties;
 import org.apache.log4j.Logger;
-
-import java.util.*;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
+import org.json.simple.JSONObject;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Path;
-import javax.ws.rs.ext.Provider;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Collection;
+import java.util.List;
 /*
 // Customized {@code ContextResolver} implementation to pass ObjectMapper to use
 @Provider
@@ -153,7 +143,7 @@ public class InquisitorComponentImpl implements InquisitorComponent
             JiraAuthenticationContext authContext = ComponentAccessor.getJiraAuthenticationContext();
 
 
-            User user = authContext.getLoggedInUser();
+            User user = authContext.getUser().getDirectoryUser();
 
             //final UserWithKey loggedInUser = UserCompatibilityHelper.convertUserObject(authContext.getUser());
 
