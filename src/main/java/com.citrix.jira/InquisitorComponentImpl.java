@@ -1,6 +1,5 @@
 package com.citrix.jira;
 import com.atlassian.annotations.PublicApi;
-import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.component.ProjectComponent;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -16,6 +15,7 @@ import com.atlassian.sal.api.ApplicationProperties;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import com.atlassian.jira.user.ApplicationUser;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -60,7 +60,7 @@ public class InquisitorComponentImpl implements InquisitorComponent
          }
         ret.put("key", parent.getKey());
         ret.put("title", parent.getSummary());
-        ret.put("type", parent.getIssueTypeObject().getName());
+        ret.put("type", parent.getIssueType().getName());
         Collection<IssueLink> outlinks = linkMgr.getOutwardLinks(parent.getId());
         JSONArray children = new JSONArray();
 
@@ -142,15 +142,12 @@ public class InquisitorComponentImpl implements InquisitorComponent
 
             JiraAuthenticationContext authContext = ComponentAccessor.getJiraAuthenticationContext();
 
+            ApplicationUser user = authContext.getLoggedInUser();
 
-            User user = authContext.getUser().getDirectoryUser();
-
+            //User user = authContext.getLoggedInUser().getDirectoryUser();
             //final UserWithKey loggedInUser = UserCompatibilityHelper.convertUserObject(authContext.getUser());
-
             //ApplicationUser au = (ApplicationUser) UserCompatibilityHelper.convertUserObject(remoteUser);
             //ßreturn doGetActions(issue, toDirectoryUser(au), 20);
-
-
 
             if(!authContext.isLoggedInUser()) {
                 throw new Exception("Cannot run this as anonymous.");
@@ -178,7 +175,7 @@ public class InquisitorComponentImpl implements InquisitorComponent
                 JSONObject obj = new JSONObject();
                 obj.put("key", t.getKey());
                 obj.put("summary", t.getSummary()); // title changes to summary
-                obj.put("issuetype", t.getIssueTypeObject().getName());
+                obj.put("issuetype", t.getIssueType().getName());
                 obj.put("created", t.getCreated().getTime());
                 try {
                     obj.put("assigneeName", t.getAssigneeUser().getDisplayName());
@@ -194,14 +191,14 @@ public class InquisitorComponentImpl implements InquisitorComponent
                     obj.put("reporterName", null);
                 }
                 obj.put("reporter", t.getReporterId());
-                if (t.getResolutionObject() != null) {
-                    obj.put("resolution", t.getResolutionObject().getName());
+                if (t.getResolution() != null) {
+                    obj.put("resolution", t.getResolution().getName());
                 }
                 else {
                     obj.put("resolution", null);
                 }
 
-                Collection<ProjectComponent> comps = t.getComponentObjects();
+                Collection<ProjectComponent> comps = t.getComponents();
                 JSONArray cs = new JSONArray();
                 for (ProjectComponent c: comps) {
                     JSONObject comp = new JSONObject();
@@ -223,3 +220,4 @@ public class InquisitorComponentImpl implements InquisitorComponent
     }
 
 }
+

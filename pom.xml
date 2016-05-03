@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.citrix.jira</groupId>
     <artifactId>inquisitor</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <organization>
         <name>Citrix</name>
@@ -58,7 +58,7 @@
 <dependency>
     <groupId>com.atlassian.jira</groupId>
     <artifactId>jira-rest-plugin</artifactId>
-    <version>7.0-20150327.124307</version>
+    <version>7.1.0</version>
     <scope>provided</scope>
 </dependency>
 
@@ -213,8 +213,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jira.version>6.4</jira.version>
-        <amps.version>6.0.1</amps.version>
+        <jira.version>7.1.5</jira.version>
+        <amps.version>6.2.4</amps.version>
         <!--<project.version>1.0.5</project.version>-->
         <plugin.testrunner.version>1.2.3-bamboo-1</plugin.testrunner.version>
 		<!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
