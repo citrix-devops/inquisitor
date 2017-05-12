@@ -6,6 +6,12 @@
 .idea/**/tasks.xml
 .idea/dictionaries
 
+# OSX files
+.DS_Store
+
+# Windows thumbnail db
+Thumbs.db
+
 # Sensitive or high-churn files:
 .idea/**/dataSources/
 .idea/**/dataSources.ids
@@ -42,4 +48,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
