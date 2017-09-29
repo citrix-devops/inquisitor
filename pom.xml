@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.citrix.jira</groupId>
     <artifactId>inquisitor</artifactId>
-    <version>1.0.7</version>
-
+    <version>1.0.8</version>
     <organization>
         <name>Citrix</name>
         <url>http://citrix.com/</url>
     </organization>
-
     <name>Inquisitor plugin for JIRA</name>
     <description>Inquisitor plugin for JIRA is extending JIRA REST API with JSON queries that are blazing fast and that do return compact results. The plugin is at least one order of magnitude faster than JIRA search, allowing you to export ~30.000 issues in less than 10 seconds.</description>
     <packaging>atlassian-plugin</packaging>
-
     <repositories>
         <!--
         <repository>
@@ -50,26 +44,19 @@
         </repository>
 
 -->
-
     </repositories>
-
     <dependencies>
-
-<dependency>
-    <groupId>com.atlassian.jira</groupId>
-    <artifactId>jira-rest-plugin</artifactId>
-    <version>7.1.0</version>
-    <scope>provided</scope>
-</dependency>
-
-
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-plugin</artifactId>
+            <version>7.1.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20080701</version>
         </dependency>
-
-
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <version>1.1.1</version>
@@ -81,14 +68,12 @@
             <artifactId>json-rpc</artifactId>
             <version>1.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.atlassian.plugins.rest</groupId>
             <artifactId>atlassian-rest-common</artifactId>
             <version>2.9.17</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-api</artifactId>
@@ -111,7 +96,6 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-
         <!-- WIRED TEST RUNNER DEPENDENCIES -->
         <dependency>
             <groupId>com.atlassian.plugins</groupId>
@@ -130,10 +114,9 @@
             <artifactId>gson</artifactId>
             <version>2.3.1</version>
         </dependency>
-
-		<!-- Uncomment to use TestKit in your project. Details at https://bitbucket.org/atlassian/jira-testkit -->
-		<!-- You can read more about TestKit at https://developer.atlassian.com/display/JIRADEV/Plugin+Tutorial+-+Smarter+integration+testing+with+TestKit -->
-		<!--
+        <!-- Uncomment to use TestKit in your project. Details at https://bitbucket.org/atlassian/jira-testkit -->
+        <!-- You can read more about TestKit at https://developer.atlassian.com/display/JIRADEV/Plugin+Tutorial+-+Smarter+integration+testing+with+TestKit -->
+        <!--
 		<dependency>
 			<groupId>com.atlassian.jira.tests</groupId>
 			<artifactId>jira-testkit-client</artifactId>
@@ -141,13 +124,12 @@
 			<scope>test</scope>
 		</dependency>
 		-->
-
         <dependency>
             <groupId>com.atlassian.usercompatibility</groupId>
             <artifactId>usercompatibility-jira</artifactId>
             <version>0.18</version>
         </dependency>
-<!--
+        <!--
 <dependency>
 <groupId>com.oracle.weblogic</groupId>
  <artifactId>ojdbc7</artifactId>
@@ -156,7 +138,6 @@
 </dependency>
 -->
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -167,8 +148,8 @@
                 <configuration>
                     <productVersion>${jira.version}</productVersion>
                     <productDataVersion>${jira.version}</productDataVersion>
-					<!-- Uncomment to install TestKit backdoor in JIRA. -->
-					<!--
+                    <!-- Uncomment to install TestKit backdoor in JIRA. -->
+                    <!--
 					<pluginArtifacts>
 						<pluginArtifact>
 							<groupId>com.atlassian.jira.tests</groupId>
@@ -177,6 +158,8 @@
 						</pluginArtifact>
 					</pluginArtifacts>
 					-->
+                    <enableQuickReload>true</enableQuickReload>
+                    <enableFastdev>false</enableFastdev>
                     <pluginDependencies>
                         <pluginDependency>
                             <groupId>com.citrix.jira</groupId>
@@ -184,20 +167,12 @@
                         </pluginDependency>
                     </pluginDependencies>
                     <instructions>
-                      <Export-Package>
-                    com.citrix.jira.*,
-                     </Export-Package>
-                        <!-- Specify what package to include. Ensure that any packages from OBRs are also listed. -->
-                        <Import-Package>
-                        *;resolution:=optional
-                        </Import-Package>
-                      <Embed-Dependency>
-                      org.json.simple;version="1.1.1"
-</Embed-Dependency>
-
-                        <CONF_COMM/>
-                        ....
-                    </instructions>
+                        <Export-Package>com.citrix.jira.*,</Export-Package>                        
+                        <!-- Specify what package to include. Ensure that any packages from OBRs are also listed. -->                        
+                        <Import-Package>*;resolution:=optional                         </Import-Package>
+                        <Embed-Dependency>org.json.simple;version="1.1.1"</Embed-Dependency>                        
+                        <CONF_COMM/>                        ....                     
+                    </instructions>
                 </configuration>
             </plugin>
             <plugin>
@@ -210,19 +185,16 @@
             </plugin>
         </plugins>
     </build>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jira.version>7.3.6</jira.version>
-        <amps.version>6.2.11</amps.version>
+        <jira.version>7.5.0</jira.version>
+        <amps.version>6.3.3</amps.version>
         <!--<project.version>1.0.5</project.version>-->
         <plugin.testrunner.version>1.2.3-bamboo-1</plugin.testrunner.version>
-		<!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
-		<testkit.version>5.2.26</testkit.version>
+        <!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
+        <testkit.version>5.2.26</testkit.version>
     </properties>
-
     <prerequisites>
         <maven>3.2.5</maven>
     </prerequisites>
-
 </project>
