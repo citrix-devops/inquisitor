@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.citrix.jira</groupId>
     <artifactId>inquisitor</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <organization>
         <name>Citrix</name>
         <url>http://citrix.com/</url>
     </organization>
     <name>Inquisitor plugin for JIRA</name>
-    <description>Inquisitor plugin for JIRA is extending JIRA REST API with JSON queries that are blazing fast and that do return compact results. The plugin is at least one order of magnitude faster than JIRA search, allowing you to export ~30.000 issues in less than 10 seconds.</description>
+    <description>Plugin for JIRA that provides additional JIRA REST APIs that are blazing fast. These are at least one order of magnitude faster than JIRA out of the box REST API, allowing you to export ~30000 issues in less than 10 seconds. After installation, use the Atlassian REST API Browser to view the additional APIs. Untick the "Show only public APIs" option and enter "inquisitor" in the search box.</description>
     <packaging>atlassian-plugin</packaging>
     <repositories>
         <!--
@@ -187,8 +187,8 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jira.version>7.5.0</jira.version>
-        <amps.version>6.3.3</amps.version>
+        <jira.version>7.7.1</jira.version>
+        <amps.version>6.3.14</amps.version>
         <!--<project.version>1.0.5</project.version>-->
         <plugin.testrunner.version>1.2.3-bamboo-1</plugin.testrunner.version>
         <!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
