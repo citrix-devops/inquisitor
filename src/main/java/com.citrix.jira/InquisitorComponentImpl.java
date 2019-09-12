@@ -169,7 +169,7 @@ public class InquisitorComponentImpl implements InquisitorComponent
             SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(user,
                     parseResult.getQuery(), PagerFilter.newPageAlignedFilter(startAt, maxResults));
 
-            List<Issue> issues = results.getIssues();
+            List<Issue> issues = results.getResults();
 
             for (Issue t: issues) {
                 JSONObject obj = new JSONObject();

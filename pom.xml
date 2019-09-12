@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.citrix.jira</groupId>
     <artifactId>inquisitor</artifactId>
-    <version>1.0.10</version>
+    <version>1.1.0</version>
     <organization>
         <name>Citrix</name>
         <url>http://citrix.com/</url>
@@ -187,8 +187,8 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jira.version>7.13.1</jira.version>
-        <amps.version>6.3.14</amps.version>
+        <jira.version>8.3.3</jira.version>
+        <amps.version>6.3.21</amps.version>
         <!--<project.version>1.0.5</project.version>-->
         <plugin.testrunner.version>1.2.3-bamboo-1</plugin.testrunner.version>
         <!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
